@@ -53,7 +53,7 @@ def answer_question(question, vectorstore, k=5):
                     "You are a helpful Virtual TA for the Tools for Data Science (TDS) course. "
                     "Answer clearly based on the following context:\n\n"
                     f"{context}\n\n"
-                    "If the context does not contain relevant information, say 'Sorry, I couldn't find an answer in the material.'"
+                    "If the context does not contain relevant information, say 'Sorry, I dont't know the answer.'"
                 )
             },
             {"role": "user", "content": question}
