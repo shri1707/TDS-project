@@ -37,7 +37,7 @@ def scrape_tds_site():
         print(f"🔗 Found {len(link_info)} total topic links.")
         for i, item in enumerate(tqdm(link_info, desc="Scraping TDS topics")):
             try:
-                full_url = f"https://tds.s-anand.net{item['href']}"
+                full_url = f"https://tds.s-anand.net/{item['href']}"
                 page.goto(full_url)
                 page.wait_for_selector(".content", timeout=10000)  # wait max 10s
 
