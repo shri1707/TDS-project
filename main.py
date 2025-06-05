@@ -26,7 +26,7 @@ class QuestionResponse(BaseModel):
     answer: str
     links: List[LinkItem]
 
-@app.post("/", response_model=QuestionResponse)
+@app.post("/api/", response_model=QuestionResponse)
 async def ask_question(data: QuestionRequest):
     try:
         answer, sources = answer_question(data.question, vectorstore)
