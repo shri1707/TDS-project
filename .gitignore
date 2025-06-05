@@ -17,3 +17,4 @@ playwright_user_data/
 .vscode/
 .env
 image.png
+promptfoo-errors.log
