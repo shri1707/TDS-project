@@ -34,11 +34,17 @@ async def ask_question(data: QuestionRequest):
         # sources is a list of dicts with keys 'url' and 'text'
         links = list(sources)
 
-        return {"answer": answer, "links": links}
+        # ✅ Ensure JSON content type with explicit JSONResponse
+        return JSONResponse(
+            content={
+                "answer": answer,
+                "links": links
+            },
+            media_type="application/json"
+        )
 
     except Exception as e:
         return JSONResponse(
             status_code=500,
             content={"error": str(e)}
         )
-
