@@ -1,4 +1,5 @@
 # === Updated qa_pipeline.py ===
+import json
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -53,7 +54,9 @@ def answer_question(question, vectorstore, k=5):
                     "You are a helpful Virtual TA for the Tools for Data Science (TDS) course. "
                     "Answer clearly based on the following context:\n\n"
                     f"{context}\n\n"
-                    "If the context does not contain relevant information, say 'Sorry, I dont't know the answer.'"
+                    "If the context contains source links, return a JSON like:\n"
+                    "{\n  \"answer\": \"...\",\n  \"links\": [\n    {\"url\": \"...\", \"text\": \"...\"}, ...\n  ]\n}\n"
+                    "Otherwise, just return a plain text answer."
                 )
             },
             {"role": "user", "content": question}
@@ -64,14 +67,23 @@ def answer_question(question, vectorstore, k=5):
         response = client.post(url, headers=headers, json=payload)
         response.raise_for_status()
         result = response.json()
-        answer = result["choices"][0]["message"]["content"]
+        raw_answer = result["choices"][0]["message"]["content"].strip()
 
-    links = []
-    for doc in docs:
-        url = doc.metadata.get("source", "Unknown")
-        links.append({
-            "url": url,
-            "text": doc.metadata.get("title", "Relevant Source")
-        })
+    try:
+        parsed = json.loads(raw_answer)
+        answer = parsed["answer"]
+        links = parsed.get("links", [])
+    except (json.JSONDecodeError, KeyError, TypeError):
+        # fallback to just text + links from FAISS docs
+        answer = raw_answer
+        links = []
+        for doc in docs:
+            url = doc.metadata.get("source", "Unknown")
+            snippet = doc.page_content.strip().split("\n")[0][:300]
+            links.append({
+                "url": url,
+                "text": snippet
+            })
 
     return answer, links
+
