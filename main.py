@@ -4,12 +4,21 @@ load_dotenv()
 
 import base64
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware  
 from pydantic import BaseModel
 from typing import List, Optional
 from fastapi.responses import JSONResponse
 from qa_pipeline import load_vectorstore, embed_text, answer_question
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Load the FAISS vectorstore once on startup
 vectorstore = load_vectorstore()
